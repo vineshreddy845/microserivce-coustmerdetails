@@ -1,0 +1,46 @@
+=> Here i am created two apis or two microservices
+  1: Employee microservice
+  2: Adress microservice.
+=> for each microservice there will be sperate database.
+=> you can see i created two databases in mysqlworkbench.
+=> one for Employee microservice and another one for Adress microservice.
+=>These databases uses in single server that is mysql server.
+=> in these I called address api using restemplate with id value from employee microservice.
+
+
+=> why we want to use microservices?
+A:The problem is before we use different architecture. see below.
+
+  Employee module
+                   -
+                       -
+  Course module           -   git-------------------jenkins-----------------------------server
+                                                                                           |
+                      -                                                                 database
+  customer module  -
+
+                                      Monolithic Architecture.
+
+  => Here set of developers works on employee module and course module , customer module commit in git and jenkins is build and test automate and deploy in server.
+  => The problem is whenever there is high number of client request to any of these module. The server may go down impact all of them.
+  => To avoid that and find where the problem is where we develop module and server independently. There may be serveral problems.
+  => so that we develop and deploy independently.
+
+    Employee module ----------git--------------------jenkins---------------------server---database.
+
+    Course module ----------git--------------------jenkins---------------------server---database.
+
+   customer module ----------git--------------------jenkins---------------------server---database.
+
+   => Above these are called micro-services.
+   =>micro-services are communicated in different ways. where iam used above code example.
+      1.  RestTemplate class. example in controller
+      2. feign client.
+        -> fegin client is used by netflix.
+        ->API Definition: Feign allows you to define the API you want to call as an interface, complete with request method annotations like @GetMapping, @PostMapping, etc.
+         The API definition acts as a blueprint for the Feign client to call the API.
+         With RestTemplate, you have to manually construct the URL, headers, and request body.
+      -> first of all we have add feginclient and spring cloud dependency in pom.xml.
+      -> where we getting feginclient from springcloud.
+      ->we have create interface for feginclient in order to call restapi.
+      ->see example
