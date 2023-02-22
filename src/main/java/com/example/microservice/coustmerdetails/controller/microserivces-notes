@@ -43,4 +43,7 @@ A:The problem is before we use different architecture. see below.
       -> first of all we have add feginclient and spring cloud dependency in pom.xml.
       -> where we getting feginclient from springcloud.
       ->we have create interface for feginclient in order to call restapi.
-      ->see example
+      ->see example in FeignClient interface.
+      ->feignclient is given by netflix. that is adopted by springcloud.
+      -> we have add feignclient dependency from maven repository.
+      -> above we created a method where we can another microserivce. implemetation for that method. is given by spring. we should not worry about that.
