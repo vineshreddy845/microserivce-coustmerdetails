@@ -8,6 +8,7 @@ import com.example.microservice.coustmerdetails.responses.Responses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,6 +27,8 @@ public class Controller {
     private Responses response;
     @Autowired
     private FeignClient feignClient;
+    @Autowired
+    private EurekaDiscoveryClient eurekaDiscoveryClient;
     //http://localhost:8080/details/save
     @PostMapping("/save")
     public Model save(@RequestBody Model details)
@@ -43,8 +46,8 @@ public class Controller {
  // calling another microservice using another microservice.
     @GetMapping("/checking/{coustmerid}")
     public Responses response(@PathVariable(value="coustmerid") Long coustmerid){
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-        logger.info("Calling coustmer-bankdetails service with coustmerid: {}", coustmerid);
+        //Logger logger = LoggerFactory.getLogger(this.getClass());
+       // logger.info("Calling coustmer-bankdetails service with coustmerid: {}", coustmerid);
         response.setCoustmerdetails(repo.findBycoustmerid(coustmerid));
         response.setName("Any problem contact vinesh");
         response.setBankdetails(restTemplate.getForObject("http://localhost:8081/bankdetails/checking/{coustmerid}", Bankdetailsresponse.class,coustmerid));
@@ -54,7 +57,7 @@ public class Controller {
     // communication between two microserivces using feignclient.
     @GetMapping("/checkings/{coustmerid}")
     public Responses responses(@PathVariable(value="coustmerid") Long coustmerid){
-        Logger logger = LoggerFactory.getLogger(this.getClass());
+       Logger logger = LoggerFactory.getLogger(this.getClass());
         logger.info("Calling coustmer-bankdetails service with coustmerid: {}", coustmerid);
         response.setCoustmerdetails(repo.findBycoustmerid(coustmerid));
         response.setName("Any problem contact vinesh");
@@ -63,4 +66,17 @@ public class Controller {
         return response;
     }
 
+    @GetMapping("/call")
+    public String name(){
+        Logger logger = LoggerFactory.getLogger(this.getClass());
+        logger.info("it is working");
+        return "vinesh";
+    }
+
+    @GetMapping("/checking")
+    public String checkingeurekaclient(){
+        Logger logger = LoggerFactory.getLogger(this.getClass());
+
+       return  eurekaDiscoveryClient.description();
+    }
 }
