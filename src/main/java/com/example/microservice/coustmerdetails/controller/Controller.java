@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/details")
@@ -98,8 +99,12 @@ public class Controller {
         response.setName("Any problem contact vinesh");
        List<ServiceInstance> save= discoveryClient.getInstances(name);
         System.out.println(name);
-       response.setBankdetails(restTemplate.getForObject(save.get(1).getUri()+"/bankdetails/checking/{coustmerid}", Bankdetailsresponse.class,coustmerid));
-       // right here it is happening that save.get(0)->there can be number of instance// give instance. geturi()// will give uri see below rest api ("/uri);
+        int index= new Random().nextInt(save.size());// we have two instances 0,1. where random().function will select instance and place in resttemplate.
+        System.out.println(index);
+        //URI uri = instances.get(index).getUri(); // we can also write uri like these.
+        // response.setBankdetails(restTemplate.getForObject(uri + "/bankdetails/checking/{coustmerid}", Bankdetailsresponse.class, coustmerid));
+        response.setBankdetails(restTemplate.getForObject(save.get(index).getUri() + "/bankdetails/checking/{coustmerid}", Bankdetailsresponse.class, coustmerid));
+            // right here it is happening that save.get(0)->there can be number of instance// give instance. geturi()// will give uri see below rest api ("/uri);
         // above called like these "http://user.attlocal.net:8080"/bankdetails/checking/{coustmerid};
         return response;
     }
