@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClient;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -37,6 +38,8 @@ public class Controller {
     private DiscoveryClient discoveryClient;
     @Autowired
     private ServiceInstance serviceInstance;
+    @Autowired
+    private LoadBalancerClient loadBalancerClient;
     //http://localhost:8080/details/save
     @PostMapping("/save")
     public Model save(@RequestBody Model details)
@@ -101,6 +104,7 @@ public class Controller {
         System.out.println(name);
         int index= new Random().nextInt(save.size());// we have two instances 0,1. where random().function will select instance and place in resttemplate.
         System.out.println(index);
+        System.out.println(save.get(index).getUri());
         //URI uri = instances.get(index).getUri(); // we can also write uri like these.
         // response.setBankdetails(restTemplate.getForObject(uri + "/bankdetails/checking/{coustmerid}", Bankdetailsresponse.class, coustmerid));
         response.setBankdetails(restTemplate.getForObject(save.get(index).getUri() + "/bankdetails/checking/{coustmerid}", Bankdetailsresponse.class, coustmerid));
@@ -114,4 +118,34 @@ public class Controller {
         // response is "http://user.attlocal.net:8080"
     }
 
+    //now above we used random() method which it select instance randomly.
+    //now we introduce load balancer.which it send request using load-balancer.
+    //spring-cloud gives us load-balancer it follows robbin alogorithm.there others to but we use round-robbin.
+    // round-robbin send to request to sequentally.we have 8081,8082 .first it sends to 8081 and second request 8082. in same way.
+    @GetMapping("/checkss/{coustmerid}/{name}")
+    public Responses response4(@PathVariable(value="coustmerid") Long coustmerid,@PathVariable(value="name")String name){
+        //Logger logger = LoggerFactory.getLogger(this.getClass());
+        // logger.info("Calling coustmer-bankdetails service with coustmerid: {}", coustmerid);
+        response.setCoustmerdetails(repo.findBycoustmerid(coustmerid));
+        response.setName("Any problem contact vinesh");
+       ServiceInstance choose =loadBalancerClient.choose(name);// here actually load balancing is working
+       URI uri=choose.getUri();// we are getting url for where load-balancer send request to instance.
+       System.out.println(uri);
+        response.setBankdetails(restTemplate.getForObject(uri + "/bankdetails/checking/{coustmerid}", Bankdetailsresponse.class, coustmerid));
+
+        return response;
+    }
+    // there is another way can also do load-balancing . where we should just place @LoadBalanced annotation at RestTemaplte configuration.
+    // go to configuration class and see RestTemplate class. where we annotated with @LoadBalanced.
+    @GetMapping("/checksss/{coustmerid}/{name}")
+    public Responses response5(@PathVariable(value="coustmerid") Long coustmerid,@PathVariable(value="name")String name){
+        //Logger logger = LoggerFactory.getLogger(this.getClass());
+        // logger.info("Calling coustmer-bankdetails service with coustmerid: {}", coustmerid);
+        response.setCoustmerdetails(repo.findBycoustmerid(coustmerid));
+        response.setName("Any problem contact vinesh");
+       // right here resTemplate act as loadbalancer. because we added @LoadBalancer annotation to restTemplate in configuration file .
+        response.setBankdetails(restTemplate.getForObject( "http://COUSTMERBANKDETAILS/bankdetails/checking/{coustmerid}", Bankdetailsresponse.class, coustmerid));
+        return response;
+    }
 }
+
