@@ -131,6 +131,8 @@ public class Controller {
        ServiceInstance choose =loadBalancerClient.choose(name);// here actually load balancing is working
        URI uri=choose.getUri();// we are getting url for where load-balancer send request to instance.
        System.out.println(uri);
+       URI uri1=serviceInstance.getUri();
+       System.out.println("APIGateWay calling server="+uri1);
         response.setBankdetails(restTemplate.getForObject(uri + "/bankdetails/checking/{coustmerid}", Bankdetailsresponse.class, coustmerid));
 
         return response;

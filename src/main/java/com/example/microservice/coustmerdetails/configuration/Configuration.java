@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 @org.springframework.context.annotation.Configuration
 public class Configuration {
 
-   @LoadBalanced// we annoateted here right. Restemplate directly will acts as LoadBalancer.
+  // @LoadBalanced// we annoateted here right. Restemplate directly will acts as LoadBalancer.
     @Bean
     public RestTemplate restTemplate(){
         return new RestTemplate();
