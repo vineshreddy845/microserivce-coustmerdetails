@@ -149,5 +149,12 @@ public class Controller {
         response.setBankdetails(restTemplate.getForObject( "http://COUSTMERBANKDETAILS/bankdetails/checking/{coustmerid}", Bankdetailsresponse.class, coustmerid));
         return response;
     }
+
+    @GetMapping("/chatgpt/{coustmerid}")
+    public Responses moral(@PathVariable(value="coustmerid") Long coustmerid){
+        System.out.println("called");
+        response.setCoustmerdetails(repo.findBycoustmerid(coustmerid));
+        return response;
+    }
 }
 
